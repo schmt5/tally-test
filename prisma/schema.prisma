@@ -1,0 +1,33 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Exam {
+  id          String   @id @default(uuid())
+  tallyFormId String   @unique
+  title       String
+  description String?
+  questions   String   // JSON string of the form structure
+  createdAt   DateTime @default(now())
+  submissions Submission[]
+}
+
+model Submission {
+  id        String   @id @default(uuid())
+  examId    String
+  exam      Exam     @relation(fields: [examId], references: [id])
+  studentId String   // Email or ID from the form
+  answers   String   // JSON string of answers
+  status    String   // "PENDING", "GRADED"
+  score     Int?
+  feedback  String?
+  submittedAt DateTime @default(now())
+}
